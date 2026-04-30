@@ -98,7 +98,7 @@ export default function AboutPage() {
             {STORY_CARDS.map((card) => (
               <article key={card.title} data-animate="fade-up" className="min-h-[260px] p-7 border border-white/10 rounded-3xl bg-gradient-to-b from-[#0c0c12] to-[#08080b]">
                 <p className="text-[9px] font-black tracking-[0.35em] uppercase text-primary mb-5">{card.eyebrow}</p>
-                <h2 className="text-3xl font-black uppercase italic leading-[0.95] mb-6" style={{ fontFamily: "var(--font-montserrat)" }}>
+                <h2 className="text-[clamp(1.8rem,2.4vw,2.2rem)] font-black uppercase italic leading-[0.95] mb-6 whitespace-nowrap" style={{ fontFamily: "var(--font-montserrat)" }}>
                   {card.title}
                 </h2>
                 <p className="text-sm text-gray-400 leading-relaxed">{card.desc}</p>
