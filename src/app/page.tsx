@@ -97,16 +97,14 @@ export default function Home() {
         </div>
 
         {/* Headline */}
-        <HeroMouseParallax className="hero-fade-up flex flex-col items-center w-full max-w-[1400px] mb-8" >
-          <div style={{ animationDelay: "0.1s" }}>
-            <AnimatedAgencyText />
-            <h1
-              className="font-black italic uppercase tracking-tighter leading-[0.9] text-[#dedede] mt-1"
-              style={{ fontFamily: "var(--font-montserrat)", fontSize: "clamp(2rem, 6.5vw, 6.5rem)", textShadow: "6px 6px 0px rgba(0,0,0,1)" }}
-            >
-              MANAGEMENT & PRODUCTION
-            </h1>
-          </div>
+        <HeroMouseParallax className="hero-fade-up flex flex-col items-center w-full max-w-[1400px] mb-8" style={{ animationDelay: "0.1s" }}>
+          <AnimatedAgencyText />
+          <h1
+            className="font-black italic uppercase tracking-tighter leading-[0.9] text-[#dedede] mt-1"
+            style={{ fontFamily: "var(--font-montserrat)", fontSize: "clamp(2rem, 6.5vw, 6.5rem)", textShadow: "6px 6px 0px rgba(0,0,0,1)" }}
+          >
+            MANAGEMENT & PRODUCTION
+          </h1>
         </HeroMouseParallax>
 
         {/* Subtitle */}
