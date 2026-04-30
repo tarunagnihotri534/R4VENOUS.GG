@@ -52,7 +52,7 @@ export default function Footer() {
               <div className="flex flex-col gap-5">
                 {[
                   { label: "Home", href: "/" },
-                  { label: "About", href: "/#about" },
+                  { label: "About", href: "/about" },
                   { label: "Tournaments", href: "/events", active: true },
                   { label: "Rosters", href: "/#rosters" },
                   { label: "Solutions", href: "/solutions" },

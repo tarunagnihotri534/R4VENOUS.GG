@@ -13,7 +13,7 @@ export default function SiteLoader() {
   return (
     <div className={`site-loader ${hidden ? "site-loader--hidden" : ""}`} aria-hidden={hidden}>
       <div className="site-loader__inner">
-        <p className="site-loader__eyebrow">ESTD. 2022 - R4VENEOUS ESPORTS</p>
+        <p className="site-loader__eyebrow">ESTD. 2024 - R4VENOUS ESPORTS</p>
         <p className="site-loader__title">Connecting to R4 Platform...</p>
         <div className="site-loader__bar">
           <span />

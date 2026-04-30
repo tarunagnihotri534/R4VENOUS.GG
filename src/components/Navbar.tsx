@@ -14,7 +14,7 @@ const NAV_LINKS = [
   { label: "Solutions",href: "/solutions",  icon: Atom },
   { label: "Events",   href: "/events",     icon: Ticket,   dropdown: true },
   { label: "Talent",   href: "/talents",    icon: Video,    dropdown: true },
-  { label: "About Us", href: "#",           icon: Info,     dropdown: true },
+  { label: "About Us", href: "/about",      icon: Info,     dropdown: true },
   { label: "Why Us?",  href: "#",           icon: BarChart2 },
 ];
 
