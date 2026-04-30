@@ -8,6 +8,15 @@ export default function AnimationObserver() {
 
   useEffect(() => {
     const observe = () => {
+      const staggerGroups = document.querySelectorAll("[data-stagger]");
+      staggerGroups.forEach((group) => {
+        const step = Number(group.getAttribute("data-stagger-step") ?? "80");
+        const children = group.querySelectorAll("[data-animate]:not([data-delay])");
+        children.forEach((child, index) => {
+          (child as HTMLElement).style.animationDelay = `${index * step}ms`;
+        });
+      });
+
       const elements = document.querySelectorAll("[data-animate]:not(.in-view)");
 
       const observer = new IntersectionObserver(
