@@ -8,6 +8,8 @@ import {
   Globe, Star, Award, Gamepad2
 } from "lucide-react";
 import AnimatedAgencyText from "@/components/AnimatedAgencyText";
+import MagneticLink from "@/components/MagneticLink";
+import HeroMouseParallax from "@/components/HeroMouseParallax";
 
 const GamehokLogo = () => (
   <div className="flex items-center gap-[6px] opacity-40 hover:opacity-100 transition-opacity duration-300 grayscale hover:grayscale-0 cursor-pointer">
@@ -95,15 +97,17 @@ export default function Home() {
         </div>
 
         {/* Headline */}
-        <div className="hero-fade-up flex flex-col items-center w-full max-w-[1400px] mb-8" style={{ animationDelay: "0.1s" }}>
-          <AnimatedAgencyText />
-          <h1
-            className="font-black italic uppercase tracking-tighter leading-[0.9] text-[#dedede] mt-1"
-            style={{ fontFamily: "var(--font-montserrat)", fontSize: "clamp(2rem, 6.5vw, 6.5rem)", textShadow: "6px 6px 0px rgba(0,0,0,1)" }}
-          >
-            MANAGEMENT & PRODUCTION
-          </h1>
-        </div>
+        <HeroMouseParallax className="hero-fade-up flex flex-col items-center w-full max-w-[1400px] mb-8" >
+          <div style={{ animationDelay: "0.1s" }}>
+            <AnimatedAgencyText />
+            <h1
+              className="font-black italic uppercase tracking-tighter leading-[0.9] text-[#dedede] mt-1"
+              style={{ fontFamily: "var(--font-montserrat)", fontSize: "clamp(2rem, 6.5vw, 6.5rem)", textShadow: "6px 6px 0px rgba(0,0,0,1)" }}
+            >
+              MANAGEMENT & PRODUCTION
+            </h1>
+          </div>
+        </HeroMouseParallax>
 
         {/* Subtitle */}
         <p
@@ -116,18 +120,18 @@ export default function Home() {
 
         {/* CTAs */}
         <div className="hero-fade-up flex flex-col sm:flex-row items-center gap-5" style={{ animationDelay: "0.34s" }}>
-          <Link
+          <MagneticLink
             href="#contact"
             className="group flex items-center justify-center gap-3 bg-[#b158ff] hover:bg-[#a04de6] text-black px-10 py-5 rounded-xl font-black text-[11px] tracking-widest uppercase transition-all duration-300 hover:scale-105 shadow-[0_0_30px_rgba(168,85,247,0.3)] hover:shadow-[0_0_50px_rgba(168,85,247,0.5)] w-full sm:w-auto"
           >
             <Award size={16} /> Partner With Us
-          </Link>
-          <Link
+          </MagneticLink>
+          <MagneticLink
             href="/events"
             className="group flex items-center justify-center gap-3 bg-[#0a0a0a] border border-white/10 hover:bg-white/5 hover:border-white/20 text-white px-10 py-5 rounded-xl font-black text-[11px] tracking-widest uppercase transition-all duration-300 w-full sm:w-auto"
           >
             <Gamepad2 size={16} /> Explore Events
-          </Link>
+          </MagneticLink>
         </div>
       </section>
 
@@ -137,7 +141,7 @@ export default function Home() {
       {/* ─── KEY METRICS GRID ─── */}
       <section className="relative z-10 py-24 px-4 sm:px-6 border-b border-white/5">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3" data-stagger data-stagger-step="85">
             {[
               { icon: Trophy, value: 300, suffix: "+", label: "Tournaments Hosted", delay: "0" },
               { icon: Users, value: 50, suffix: "K+", label: "Trusted Active Gamers", delay: "100" },
@@ -169,7 +173,7 @@ export default function Home() {
       <section className="relative z-10 py-16 px-4 sm:px-6 border-b border-white/5 bg-white/[0.02]">
         <div className="max-w-7xl mx-auto">
           <p data-animate="fade-up" className="text-center text-xs font-bold tracking-[0.3em] text-gray-500 uppercase mb-10">Community Reach</p>
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3" data-stagger data-stagger-step="75">
             {[
               { icon: "🎮", platform: "Discord", value: 15000, suffix: "+", label: "Active Players", delay: "0" },
               { icon: "📸", platform: "Instagram", value: 12000, suffix: "+", label: "Esports Audience", delay: "100" },
@@ -266,7 +270,7 @@ export default function Home() {
           <p data-animate="fade-up" data-delay="250" className="text-gray-400 text-lg max-w-xl mx-auto mb-12 leading-relaxed">
             R4VENEOUS is not just a team — it&apos;s a standard of excellence. Your journey to the podium begins here.
           </p>
-          <Link
+          <MagneticLink
             data-animate="zoom-in"
             data-delay="400"
             href="mailto:contact@r4veneous.gg"
@@ -274,7 +278,7 @@ export default function Home() {
             style={{ clipPath: "polygon(0 0, calc(100% - 20px) 0, 100% 100%, 20px 100%)" }}
           >
             Talk To Us <ArrowRight size={20} />
-          </Link>
+          </MagneticLink>
           <div data-animate="fade-up" data-delay="550" className="flex items-center justify-center gap-4 mt-8 text-xs font-bold tracking-widest text-gray-600 uppercase">
             <span>#BeTheMaster</span>
             <span className="text-white/10">·</span>
