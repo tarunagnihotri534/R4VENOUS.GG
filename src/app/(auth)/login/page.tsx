@@ -20,34 +20,64 @@ export default function AuthPage() {
 
   const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [otp, setOtp] = useState("");
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
-  // ── STEP 1: Send OTP to email ──
-  const sendOtp = async (e: React.FormEvent) => {
+  // ── Auth Handlers ──
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
+    
     setLoading(true);
     setError(null);
     setInfo(null);
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: {
-        shouldCreateUser: true,
-        data: mode === "register" ? { full_name: displayName, display_name: displayName } : undefined,
-      },
-    });
+    if (mode === "register") {
+      if (password !== confirmPassword) {
+        setError("Passwords do not match.");
+        setLoading(false);
+        return;
+      }
+      if (password.length < 8) {
+        setError("Password must be at least 8 characters.");
+        setLoading(false);
+        return;
+      }
 
-    setLoading(false);
-    if (error) {
-      setError(error.message);
+      const { error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password: password,
+        options: {
+          data: { full_name: displayName, display_name: displayName },
+        },
+      });
+
+      setLoading(false);
+      if (error) {
+        setError(error.message);
+      } else {
+        setStep("otp");
+        setInfo(`A 6-digit verification code was sent to ${email}.`);
+      }
     } else {
-      setStep("otp");
-      setInfo(`A 6-digit code was sent to ${email}. Check your inbox (and spam folder).`);
+      // Login mode
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password: password,
+      });
+
+      setLoading(false);
+      if (error) {
+        setError(error.message);
+      } else {
+        window.location.href = "/";
+      }
     }
   };
 
-  // ── STEP 2: Verify OTP ──
+  // ── STEP 2: Verify OTP (Registration Only) ──
   const verifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!otp.trim()) return;
@@ -57,15 +87,19 @@ export default function AuthPage() {
     const { error } = await supabase.auth.verifyOtp({
       email: email.trim(),
       token: otp.trim(),
-      type: "email",
+      type: "signup",
     });
 
     setLoading(false);
     if (error) {
       setError("Invalid or expired code. Please try again.");
     } else {
-      // Redirect to home on success
-      window.location.href = "/";
+      await supabase.auth.signOut(); // Make sure user is logged out so they can log in
+      setShowSuccessPopup(true);
+      setTimeout(() => {
+        setShowSuccessPopup(false);
+        switchMode("login");
+      }, 3000);
     }
   };
 
@@ -75,6 +109,8 @@ export default function AuthPage() {
     setError(null);
     setInfo(null);
     setOtp("");
+    setPassword("");
+    setConfirmPassword("");
   };
 
   return (
@@ -130,11 +166,11 @@ export default function AuthPage() {
               <h1 className="text-2xl font-black uppercase text-white mb-1 leading-tight" style={{ fontFamily: "var(--font-montserrat)" }}>
                 {step === "email"
                   ? mode === "login" ? "Welcome Back" : "Join The Roster"
-                  : "Enter Your Code"}
+                  : "Verify Your Account"}
               </h1>
               <p className="text-gray-500 text-xs leading-relaxed">
                 {step === "email"
-                  ? "No passwords needed — we'll send a one-time code to your email."
+                  ? mode === "login" ? "Enter your credentials to access your account." : "Create a new account to join the community."
                   : "We've sent a 6-digit verification code to your inbox."}
               </p>
             </div>
@@ -156,11 +192,11 @@ export default function AuthPage() {
 
             {/* ── STEP 1: Email form ── */}
             {step === "email" && (
-              <form onSubmit={sendOtp} className="space-y-5">
+              <form onSubmit={handleAuth} className="space-y-5">
                 {mode === "register" && (
                   <div>
                     <label className="block text-[10px] font-black tracking-widest text-gray-500 uppercase mb-2">
-                      Display Name
+                      Your Name
                     </label>
                     <input
                       type="text"
@@ -175,7 +211,7 @@ export default function AuthPage() {
 
                 <div>
                   <label className="block text-[10px] font-black tracking-widest text-gray-500 uppercase mb-2">
-                    Email Address
+                    {mode === "login" ? "Email Address" : "Your Email"}
                   </label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
@@ -190,6 +226,45 @@ export default function AuthPage() {
                   </div>
                 </div>
 
+                <div>
+                  <label className="block text-[10px] font-black tracking-widest text-gray-500 uppercase mb-2">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      placeholder="••••••••"
+                      className={`w-full bg-white/5 border ${mode === 'register' && password.length > 0 && password.length < 8 ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-primary/70'} text-white text-sm py-3 pl-10 pr-4 placeholder-gray-600 focus:outline-none focus:bg-primary/5 transition-all`}
+                    />
+                  </div>
+                  {mode === "register" && password.length > 0 && password.length < 8 && (
+                    <p className="text-red-400 text-[10px] mt-1.5 font-bold tracking-wider">Password must be at least 8 characters.</p>
+                  )}
+                </div>
+
+                {mode === "register" && (
+                  <div>
+                    <label className="block text-[10px] font-black tracking-widest text-gray-500 uppercase mb-2">
+                      Confirm Password
+                    </label>
+                    <div className="relative">
+                      <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
+                      <input
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                        placeholder="••••••••"
+                        className="w-full bg-white/5 border border-white/10 text-white text-sm py-3 pl-10 pr-4 placeholder-gray-600 focus:outline-none focus:border-primary/70 focus:bg-primary/5 transition-all"
+                      />
+                    </div>
+                  </div>
+                )}
+
                 <button
                   type="submit"
                   disabled={loading}
@@ -200,23 +275,41 @@ export default function AuthPage() {
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   ) : (
                     <>
-                      <Mail size={14} />
-                      {mode === "login" ? "Send Login Code" : "Send Verification Code"}
+                      {mode === "login" ? <LogIn size={14} /> : <UserPlus size={14} />}
+                      {mode === "login" ? "Sign In" : "Create Account"}
                       <ArrowRight size={14} />
                     </>
                   )}
                 </button>
 
-                {/* What to expect */}
-                <div className="p-4 bg-white/[0.02] border border-white/5 space-y-2">
-                  <p className="text-[10px] font-black tracking-widest text-gray-600 uppercase">What happens next</p>
-                  {["We send a 6-digit OTP to your email", "Enter the code on the next screen", "You're instantly logged in — no password needed"].map((s, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <span className="w-4 h-4 rounded-full bg-primary/20 text-primary text-[9px] font-black flex items-center justify-center flex-shrink-0">{i + 1}</span>
-                      <span className="text-[11px] text-gray-500">{s}</span>
-                    </div>
-                  ))}
+                <div className="flex items-center gap-3 my-4">
+                  <div className="flex-1 h-px bg-white/10" />
+                  <span className="text-[9px] font-black tracking-widest text-gray-500 uppercase">Or Continue With</span>
+                  <div className="flex-1 h-px bg-white/10" />
                 </div>
+
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setLoading(true);
+                    await supabase.auth.signInWithOAuth({
+                      provider: "google",
+                      options: {
+                        redirectTo: `${window.location.origin}/`,
+                      },
+                    });
+                  }}
+                  className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-200 text-black py-3.5 font-black text-[11px] tracking-widest uppercase transition-all shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+                  style={{ clipPath: "polygon(0 0, calc(100% - 12px) 0, 100% 100%, 12px 100%)" }}
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                  </svg>
+                  Sign in with Google
+                </button>
               </form>
             )}
 
@@ -268,19 +361,6 @@ export default function AuthPage() {
                   >
                     <RotateCcw size={11} /> Change Email
                   </button>
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      setError(null);
-                      setLoading(true);
-                      await supabase.auth.signInWithOtp({ email: email.trim(), options: { shouldCreateUser: true } });
-                      setLoading(false);
-                      setInfo("A new code has been sent to your email.");
-                    }}
-                    className="flex items-center gap-1.5 text-primary hover:text-white transition-colors font-bold tracking-widest uppercase text-[10px]"
-                  >
-                    <Mail size={11} /> Resend Code
-                  </button>
                 </div>
               </form>
             )}
@@ -315,6 +395,18 @@ export default function AuthPage() {
             </>
           )}
         </p>
+
+        {/* Success Popup */}
+        <div className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-500 ${showSuccessPopup ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+          <div className="relative bg-[#0a0a0a] border border-primary/30 p-10 flex flex-col items-center justify-center rounded-2xl shadow-[0_0_50px_rgba(168,85,247,0.3)] transform transition-transform duration-500 max-w-sm w-full mx-4" style={{ transform: showSuccessPopup ? "scale(1) translateY(0)" : "scale(0.9) translateY(20px)" }}>
+            <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mb-6">
+              <CheckCircle className="w-8 h-8 text-primary" />
+            </div>
+            <h2 className="text-2xl font-black uppercase text-white mb-2 text-center" style={{ fontFamily: "var(--font-montserrat)" }}>Registered Successfully</h2>
+            <p className="text-gray-400 text-xs text-center font-bold tracking-widest uppercase">Redirecting to login...</p>
+          </div>
+        </div>
       </div>
     </div>
   );

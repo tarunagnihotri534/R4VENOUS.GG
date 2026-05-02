@@ -15,7 +15,6 @@ const NAV_LINKS = [
   { label: "Events",   href: "/events",     icon: Ticket,   dropdown: true },
   { label: "Talent",   href: "/talents",    icon: Video,    dropdown: true },
   { label: "About Us", href: "/about",      icon: Info,     dropdown: true },
-  { label: "Why Us?",  href: "#",           icon: BarChart2 },
 ];
 
 export default function Navbar() {
@@ -120,15 +119,9 @@ export default function Navbar() {
               <div className="hidden md:flex items-center gap-2 ml-2">
                 <Link
                   href="/login"
-                  className="px-4 py-2 text-[10px] font-black tracking-widest text-[#777] hover:text-white uppercase transition-colors"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/signup"
                   className="px-8 py-3 rounded-full bg-primary hover:bg-primary/90 text-black font-black text-[9px] tracking-[0.25em] uppercase transition-all shadow-[0_0_20px_rgba(168,85,247,0.2)] hover:shadow-[0_0_30px_rgba(168,85,247,0.5)] flex items-center justify-center gap-2 group border border-primary"
                 >
-                  <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" /> Sign Up
+                  Sign In <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
             )}
@@ -185,16 +178,9 @@ export default function Navbar() {
               <Link
                 href="/login"
                 onClick={() => setMobileOpen(false)}
-                className="flex items-center justify-center gap-2 bg-[#111] border border-white/5 hover:border-white/20 text-gray-300 py-4 rounded-2xl text-[11px] font-black tracking-[0.2em] uppercase transition-all"
-              >
-                Sign In
-              </Link>
-              <Link
-                href="/signup"
-                onClick={() => setMobileOpen(false)}
                 className="flex items-center justify-center gap-2 bg-primary text-black py-4 rounded-2xl text-[11px] font-black tracking-[0.2em] uppercase transition-all shadow-[0_0_20px_rgba(168,85,247,0.3)]"
               >
-                Sign Up <ArrowRight size={14} />
+                Sign In <ArrowRight size={14} />
               </Link>
             </div>
           )}

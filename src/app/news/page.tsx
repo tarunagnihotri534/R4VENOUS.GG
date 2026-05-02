@@ -59,7 +59,48 @@ const NEWS = [
   },
 ];
 
-export default function NewsPage() {
+async function getQuickUpdates() {
+  try {
+    const res = await fetch('https://www.talkesport.com/feed/', { 
+      next: { revalidate: 3600 }, // Revalidate every hour
+      headers: { 'User-Agent': 'Mozilla/5.0' }
+    });
+    if (!res.ok) return [];
+    const text = await res.text();
+    
+    const items = [];
+    const itemMatches = Array.from(text.matchAll(/<item>([\s\S]*?)<\/item>/g));
+    
+    for (const match of itemMatches) {
+      if (items.length >= 10) break;
+      const content = match[1];
+      const title = content.match(/<title>([\s\S]*?)<\/title>/)?.[1]
+        ?.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
+        .replace(/&#8217;/g, "'")
+        .replace(/&#8211;/g, "-")
+        .replace(/&#038;/g, "&")
+        .trim();
+      const link = content.match(/<link>([\s\S]*?)<\/link>/)?.[1]?.trim();
+      const date = content.match(/<pubDate>([\s\S]*?)<\/pubDate>/)?.[1];
+      
+      if (title && link) {
+        items.push({ 
+          title, 
+          link, 
+          date: date ? new Date(date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' }) : ''
+        });
+      }
+    }
+    return items;
+  } catch (e) {
+    console.error("News fetch error:", e);
+    return [];
+  }
+}
+
+export default async function NewsPage() {
+  const quickUpdates = await getQuickUpdates();
+
   return (
     <div className="flex-1 flex flex-col bg-black text-white overflow-x-hidden">
 
@@ -91,6 +132,75 @@ export default function NewsPage() {
             Updates
           </div>
         </div>
+      </div>
+
+      {/* ─── QUICK UPDATES TICKER ─── */}
+      <div className="w-full bg-white/[0.02] border-y border-white/5 py-5 overflow-hidden relative group backdrop-blur-sm">
+        {/* Ambient background glow */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-primary/10 opacity-30 pointer-events-none" />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center gap-8 relative z-10">
+          <div className="flex-shrink-0 flex items-center gap-3">
+            <div className="flex h-2.5 w-2.5 relative">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary shadow-[0_0_10px_rgba(168,85,247,0.8)]"></span>
+            </div>
+            <span className="text-[11px] font-black tracking-[0.3em] text-primary uppercase whitespace-nowrap drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]" style={{ fontFamily: "var(--font-montserrat)" }}>Quick Updates:</span>
+          </div>
+          
+          <div className="flex-1 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
+            <div className="flex animate-marquee hover:pause whitespace-nowrap gap-16">
+              {quickUpdates.map((update, i) => (
+                <Link 
+                  key={i} 
+                  href={update.link} 
+                  target="_blank"
+                  className="flex items-center gap-4 group/item transition-all duration-300"
+                >
+                  <span className="text-[10px] text-gray-500 font-bold tracking-widest uppercase italic border-b border-primary/20">{update.date}</span>
+                  <span 
+                    className="text-[12px] font-black tracking-widest uppercase text-white/90 group-hover/item:text-primary transition-all duration-300 drop-shadow-[0_0_12px_rgba(168,85,247,0.3)] group-hover/item:drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]" 
+                    style={{ fontFamily: "var(--font-montserrat)" }}
+                  >
+                    {update.title}
+                  </span>
+                  <div className="h-1.5 w-1.5 rounded-full bg-primary/40 group-hover/item:bg-primary transition-colors" />
+                </Link>
+              ))}
+              {/* Duplicate for seamless loop */}
+              {quickUpdates.map((update, i) => (
+                <Link 
+                  key={`dup-${i}`} 
+                  href={update.link} 
+                  target="_blank"
+                  className="flex items-center gap-4 group/item transition-all duration-300"
+                >
+                  <span className="text-[10px] text-gray-500 font-bold tracking-widest uppercase italic border-b border-primary/20">{update.date}</span>
+                  <span 
+                    className="text-[12px] font-black tracking-widest uppercase text-white/90 group-hover/item:text-primary transition-all duration-300 drop-shadow-[0_0_12px_rgba(168,85,247,0.3)] group-hover/item:drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]" 
+                    style={{ fontFamily: "var(--font-montserrat)" }}
+                  >
+                    {update.title}
+                  </span>
+                  <div className="h-1.5 w-1.5 rounded-full bg-primary/40 group-hover/item:bg-primary transition-colors" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        <style dangerouslySetInnerHTML={{ __html: `
+          @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          .animate-marquee {
+            animation: marquee 20s linear infinite;
+          }
+          .hover\\:pause:hover {
+            animation-play-state: paused;
+          }
+        `}} />
       </div>
 
       {/* Filter bar */}

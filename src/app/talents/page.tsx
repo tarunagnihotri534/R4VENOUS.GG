@@ -34,7 +34,7 @@ export default function TalentsPage() {
               paddingRight: "0.1em" // prevent clipping of italic text
             }}
           >
-            CREATORS.
+            CREATORS
           </span>
         </h1>
       </div>
@@ -78,9 +78,9 @@ export default function TalentsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
           {[
             { subs: "2.2M+", name: "Pahadi Gaming", title: "Sniper", image: "/pahadi_gaming.png" },
-            { subs: "1.5M+", name: "Arrow Gaming", title: "Caster", image: "/arrow_gaming.png" },
-            { subs: "3.2M+", name: "Nonstop Gaming", title: "Caster", image: "/nonstop_gaming.png" },
-            { subs: "557" },
+            { subs: "1.5M+", name: "DAAR 007", title: "Rusher", image: "/DAROO7.png" },
+            { subs: "3.2M+", name: "JONATHAN GAMING", title: "Flanker", image: "/Jonny.png" },
+            { subs: "557", name: "Lokesh Gamer", title: "Content Creator", image: "/lokesh.jpg" },
           ].map((creator, i) => (
             <div 
               key={i}
