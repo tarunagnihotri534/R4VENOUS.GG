@@ -101,7 +101,7 @@ export default function EventsPage() {
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 w-full pt-20">
         
         {/* -- TOURNAMENTS SECTION -- */}
-        <div className="mb-8 flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
+        <div className="mb-8 flex flex-col items-center text-center gap-4">
           <div>
             <span className="text-[10px] font-black tracking-[0.3em] text-primary uppercase block mb-2">// MAJOR OFFLINE EVENTS</span>
             <h2 className="text-4xl font-black uppercase italic" style={{ fontFamily: "var(--font-montserrat)" }}>Lucknow LAN <span className="text-primary">Tournaments</span></h2>
@@ -168,7 +168,7 @@ export default function EventsPage() {
         </div>
 
         {/* -- SCRIMS SECTION -- */}
-        <div className="mb-8 flex flex-col md:flex-row items-start md:items-end justify-between gap-4 border-t border-white/5 pt-20">
+        <div className="mb-8 flex flex-col items-center text-center gap-4 border-t border-white/5 pt-20">
           <div>
             <span className="text-[10px] font-black tracking-[0.3em] text-secondary uppercase block mb-2">// ONLINE BOOTCAMP</span>
             <h2 className="text-4xl font-black uppercase italic" style={{ fontFamily: "var(--font-montserrat)" }}>Daily <span className="text-secondary">Practice Scrims</span></h2>
